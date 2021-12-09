@@ -1,0 +1,114 @@
+{
+    "rules" : [ 
+        {
+            "Status" : "Disable",
+            "Name" : "Find external binary calls",
+            "ASTType" : "CommandAst",
+            "ASTProperty" : "InvocationOperator",
+            "Operator" : "eq",
+            "SearchStringPattern" : ["Ampersand"],
+            "Message" : "External binary call found",
+            "Severity" : "warning"
+        },
+        {
+            "Status" : "Disable",
+            "Name" : "Find suspicious WMI classes",
+            "ASTType" : "StringConstantExpressionAst",
+            "ASTProperty" : "value",
+            "Operator" : "like",
+            "SearchStringPattern" : ["*Win32_Processor*","*Win32_Bios*", "*Win32_OperatingSystem*","*Win32_ComputerSystem*", "*Win32_ComputerSystemProduct*","*Win32_ShadowCopy*","*Win32_ProcessStartup*","*Win32_Process*","*Win32_Service*","*__InstanceCreationEvent*"],
+            "Message" : "Suspicious WMI class",
+            "Severity" : "warning"
+        },
+        {
+            "Status" : "Disable",
+            "Name" : "Find suspicious WMI classes",
+            "ASTType" : "ExpandableStringExpressionAst",
+            "ASTProperty" : "value",
+            "Operator" : "like",
+            "SearchStringPattern" : ["*Win32_Processor*","*Win32_Bios*", "*Win32_OperatingSystem*","*Win32_ComputerSystem*", "*Win32_ComputerSystemProduct*","*Win32_ShadowCopy*","*Win32_ProcessStartup*","*Win32_Process*","*Win32_Service*","*__InstanceCreationEvent*"],
+            "Message" : "Suspicious WMI class",
+            "Severity" : "warning"
+        },
+        {
+            "Status" : "Disable",
+            "Name" : "Find base64 content in expressions",
+            "ASTType" : "StringConstantExpressionAst",
+            "ASTProperty" : "value",
+            "Operator" : "match",
+            "SearchStringPattern" : ["^(?:[A-Za-z\\d+\/]{4})*(?:[A-Za-z\\d+\/]{3}=|[A-Za-z\\d+\/]{2}==)?$"],
+            "Message" : "Base64 potential content",
+            "Severity" : "info"
+        },
+        {
+            "Status" : "Disable",
+            "Name" : "Find base64 content in variables",
+            "ASTType" : "AssignmentStatementAst",
+            "ASTProperty" : "Right",
+            "Operator" : "match",
+            "SearchStringPattern" : ["^(.)(?:[A-Za-z\\d+\\\/]{4})*(?:[A-Za-z\\d+\\\/]{3}=|[A-Za-z\\d+\\\/]{2}==)?(.)$"],
+            "Message" : "Base64 potential content in variable",
+            "Severity" : "info"
+        },
+        {
+            "Status" : "Disable",
+            "Name" : "Find long length string in variables",
+            "ASTType" : "AssignmentStatementAst",
+            "ASTProperty" : "Right.tostring().length",
+            "Operator" : "gt",
+            "SearchOtherPattern" : [30],
+            "Message" : "long variable content length",
+            "Severity" : "info"
+        },
+        {
+            "Status" : "Disable",
+            "Name" : "Find global variables",
+            "ASTType" : "VariableExpressionAst",
+            "ASTProperty" : "VariablePath",
+            "Operator" : "like",
+            "SearchStringPattern" : ["global:*"],
+            "Message" : "Global variable scope definition",
+            "Severity" : "warning"
+        },
+        {
+            "Status" : "Disable",
+            "Name" : "Find suspicious cmdlets",
+            "ASTType" : "StringConstantExpressionAst",
+            "ASTProperty" : "Value",
+            "Operator" : "eq",
+            "SearchStringPattern" : ["New-CimInstance","Get-CimInstance","invoke-CimInstance","Invoke-WmiMethod","Get-WmiObject","Set-WmiInstance","Remove-WmiObject","Start-BitsTransfer","Add-MpPreference","Set-MpPreference","Enable-WindowsOptionalFeature","Invoke-Expression","Invoke-Command","Add-type","Remove-EtwTraceProvider","Set-EtwTraceProvider"],
+            "Message" : "Suspicious cmdlet",
+            "Severity" : "warning"
+        },
+        {
+            "Status" : "Disable",
+            "Name" : "Find suspicious methods",
+            "ASTType" : "StringConstantExpressionAst",
+            "ASTProperty" : "value",
+            "Operator" : "eq",
+            "SearchStringPattern" : ["create","start","ToBase64String","DownloadString","FromBase64String","GetBytes","DownloadFile","ReadAllBytes","Decompress","load","LoadLibrary","GetProcAddress","virtualprotect"],
+            "Message" : "Suspicious method",
+            "Severity" : "warning"
+        },
+        {
+            "Status" : "Disable",
+            "Name" : "Find suspicious objects",
+            "ASTType" : "StringConstantExpressionAst",
+            "ASTProperty" : "value",
+            "Operator" : "like",
+            "SearchStringPattern" : ["*IO.StreamReader*","*Net.NetworkInformation.Ping*","*Net.WebClient*", "*ComObject*","*Net.Sockets.TCPClient*", "*Net.Sockets.UDPClient*", "*IO.Compression*", "*Diagnostics.Process*"],
+            "Message" : "Suspicious object",
+            "Severity" : "warning"
+        },
+        {
+            "Status" : "Disable",
+            "Name" : "Find suspicious types",
+            "ASTType" : "TypeExpressionAst",
+            "ASTProperty" : "TypeName",
+            "Operator" : "like",
+            "SearchStringPattern" : ["*Scriptblock*","*Convert*","*Text.Encoding*","*char*","*IO.File*","*Diagnostics.Process*","*Reflection.Assembly*","*Management.Automation*","*Win32*","*Runtime.InteropServices.Marshal*"],
+            "Message" : "Suspicious type",
+            "Severity" : "warning"
+        }
+    ]
+}
