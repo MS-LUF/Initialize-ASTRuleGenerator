@@ -1,0 +1,1 @@
+put Initialize-ASTRuleGenerator sources and json config file here
