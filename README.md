@@ -46,6 +46,8 @@ I did not provide my own rule, just a sample. But the idea is to offer a simple 
 ```
 	C:\PS> Invoke-ScriptAnalyzer -Path C:\myscript.ps1 -CustomRulePath C:\Initialize-ASTRuleGenerator.psd1
 ```
- 
+### integrate this module in a GitLab CI-CD pipeline
+- you can use this module to analyze automatically all your PWSH commit in a gitlab repository. Find an integration sample [here](https://github.com/MS-LUF/Initialize-ASTRuleGenerator/tree/main/GitLab-CICD-Sample-Integration)
+
 ## Function
  - Measure-CustomASTRule
