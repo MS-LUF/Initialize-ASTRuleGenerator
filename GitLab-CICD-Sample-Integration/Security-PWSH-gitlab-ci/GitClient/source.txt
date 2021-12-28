@@ -1,0 +1,2 @@
+Put Windows Git client sources here : https://git-scm.com/download/win
+Choose portable version and extract the content of 7zip auto extract file here
