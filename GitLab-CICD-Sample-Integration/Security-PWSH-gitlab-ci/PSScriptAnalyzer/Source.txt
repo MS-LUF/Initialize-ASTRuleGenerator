@@ -1,0 +1,1 @@
+Put PSScriptAnalyzer module sources here : https://www.powershellgallery.com/packages/PSScriptAnalyzer/1.20.0
