@@ -20,9 +20,9 @@ A simple integration sample of Initialize-ASTRuleGenerator as a dedicated job of
 - CI-CD pipeline defined
 
 ### Installation
-- copy folder **Security-PWSH-gitlab-ci** at the root of your GitLab repository
-  - download each source required in each subfolders (see souorce.txt file for more information in each subfolder)
-- copy file **sec-pwsh-analysis-malicious.ps1** at the root of your GitLab repository
+- Copy folder **Security-PWSH-gitlab-ci** at the root of your GitLab repository
+  - Download each source required in each subfolders (see **source.txt** file for more information in each subfolder)
+- Copy file **sec-pwsh-analysis-malicious.ps1** at the root of your GitLab repository
 - Edit your **.gitlab-ci.yml** file and add the sample content available in my **.gitlab-ci.yml**
     - add the new stage
     - copy the **repository_based_script_on_windows** section
