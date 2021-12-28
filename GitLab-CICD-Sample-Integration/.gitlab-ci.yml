@@ -1,0 +1,16 @@
+stages:
+  - detect_pwsh_psscriptanalyzer
+
+repository_based_script_on_windows:
+  stage: detect_pwsh_psscriptanalyzer
+  tags:  
+    - TagsToBeDefinedHere
+
+  variables:
+    SCENARIO: "*** SCENARIO: Detect potential PWSH malicious code in commit"
+
+  script: ./sec-pwsh-analysis-malicious.ps1
+  allow_failure: false
+  artifacts:
+    paths: [ pwsh-security-psanalyzer.log ]
+    when: always
