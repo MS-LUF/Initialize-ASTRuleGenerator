@@ -8,6 +8,7 @@ A simple integration sample of Initialize-ASTRuleGenerator as a dedicated job of
 ## Notes
 ### 0.5 - first public release - sample - beta version
 - work on all runner type (Shell or Docker)
+- work on all powershell version (Windows PowerShell or PowerShell)
 - All external prerequisites are embedded :
     - Initialize-ASTRuleGenerator module
     - Git windows client (used to get file name linked to the commit)
