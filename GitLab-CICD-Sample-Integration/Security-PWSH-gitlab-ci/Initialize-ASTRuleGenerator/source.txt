@@ -1,1 +1,7 @@
+Download instruction :
 put Initialize-ASTRuleGenerator sources and json config file here
+
+Folder Files list :
+\Initialize-ASTRuleGenerator.json
+\Initialize-ASTRuleGenerator.psd1
+\Initialize-ASTRuleGenerator.psm1
