@@ -5,14 +5,9 @@ Choose portable version and extract the content of 7zip auto extract file here
 Folder Files list :
 GitSource.zip
 
-Zip file must contain the following files :
-\bin
-\cmd
+Zip file must contain the following files and folders structure (root of the zip file) :
 \dev
-\etc
-\mingw64
 \tmp
-\usr
 \git-bash.exe
 \git-cmd.exe
 \LICENSE.txt
@@ -74,11 +69,6 @@ Zip file must contain the following files :
 \etc\ssh\moduli
 \etc\ssh\sshd_config
 \etc\ssh\ssh_config
-\mingw64\bin
-\mingw64\doc
-\mingw64\etc
-\mingw64\lib
-\mingw64\libexec
 \mingw64\share
 \mingw64\ssl
 \mingw64\bin\acountry.exe
