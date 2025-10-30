@@ -1,4 +1,4 @@
-![image](http://www.lucas-cueff.com/files/gallery.png)
+![image](https://www.lucas-cueff.com/files/gallery.png)
 
 # Initialize-ASTRuleGenerator
 generate automatically simple PSScriptAnalyzer rules based on a JSON configuration file Initialize-ASTRuleGenerator.json
@@ -51,3 +51,4 @@ I did not provide my own rule, just a sample. But the idea is to offer a simple 
 
 ## Function
  - Measure-CustomASTRule
+
