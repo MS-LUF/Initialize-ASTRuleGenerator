@@ -2,7 +2,7 @@
 Module Name: Initialize-ASTRuleGenerator
 Module Guid: 1b00b851-b466-4a87-a99f-071d0c00f84a
 Download Help Link:
-Help Version: 1.1.0.0
+Help Version: 1.1.1.0
 Locale: en-US
 ---
 

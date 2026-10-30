@@ -292,6 +292,34 @@ checked. Outside Windows, code page 1252 is assumed. To turn the check off, add
 `"encodingcheck": "Disable"` to the rules file; any value other than `Enable` or `Disable` stops
 the module from loading.
 
+## Findings a file suppresses for itself
+
+PSScriptAnalyzer honours a `SuppressMessageAttribute` written in the file it analyses, and rules of
+this module are suppressed by their name. So a script can hide its own findings: `hiding.ps1`
+below calls `Invoke-Expression`, with the `Dynamic code` rule of the first example suppressed.
+
+```powershell
+function Get-Thing {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('Dynamic code', '')]
+    param($Code)
+    Invoke-Expression $Code
+}
+```
+
+A normal run reports nothing. `-SuppressedOnly` shows what was hidden:
+
+```powershell
+PS> Invoke-ScriptAnalyzer -Path .\hiding.ps1 -CustomRulePath .\Initialize-ASTRuleGenerator\Initialize-ASTRuleGenerator.psd1
+PS> Invoke-ScriptAnalyzer -Path .\hiding.ps1 -CustomRulePath .\Initialize-ASTRuleGenerator\Initialize-ASTRuleGenerator.psd1 -SuppressedOnly
+
+RuleName                            Severity     ScriptName Line  Justification
+--------                            --------     ---------- ----  -------------
+Dynamic code                        Warning      hiding.ps1 4
+```
+
+When the result gates anything, count both runs, as the CI samples do. The module cannot prevent
+this itself, because PSScriptAnalyzer removes these findings after the rule has returned them.
+
 ## Check every commit in GitLab CI
 
 The [GitLab CI-CD sample](GitLab-CICD-Sample-Integration/README.md) runs the rules on the

@@ -9,6 +9,7 @@ A simple integration sample of Initialize-ASTRuleGenerator as a dedicated job of
 - finds the PowerShell files (.ps1, .psm1, .psd1) added or changed on the branch: between the tested commit and the point where the branch left `main`, so every commit of the branch is analysed, not only the last one of a push. A pull request build compares the merge commit with the target branch.
 - runs PSScriptAnalyzer on each of them with the Initialize-ASTRuleGenerator rules. The `Security-PWSH-ADO-ci` folder itself is never analysed.
 - fails (exit code 1) when a finding has the Error severity, and also when the analysis cannot run (rule module that does not load, shallow checkout, `main` missing from the checkout...): a security check that cannot run does not pass.
+- counts findings a file suppresses for itself with a `SuppressMessageAttribute`: a scanned file cannot hide its own findings. They are logged as `Suppressed in the file, still counted`.
 - writes `pwsh-security-psanalyzer.log` on every run; when the job fails, the log is published as the `sec-pwsh-analysis-failure-log` build artifact.
 
 ## Notes

@@ -188,7 +188,7 @@ function Get-SecurityJobBase {
             Receive-SecurityJobHistory -Git $Git -Branch $defaultBranch
         }
         # Throws when the branch shares no history with the default branch: the job fails
-        # rather than analyse less than the branch holds. 
+        # rather than analyse less than the branch holds.
         $base = Invoke-SecurityJobGit -Git $Git -Argument @('merge-base', $defaultRef, $env:CI_COMMIT_SHA) | Select-Object -First 1
         Write-SecurityJobLog -Level info -Message "Branch pipeline: compared with the merge-base with $defaultBranch, $base."
         return $base
@@ -263,9 +263,19 @@ try {
     foreach ($file in $files) {
         $fullPath = Join-Path $script:RepositoryRoot $file
         Write-SecurityJobLog -Level info -Message "Analysing $file"
-        # When the rule module cannot load, this throws "Cannot find ScriptAnalyzer rules in the 
+        # When the rule module cannot load, this throws "Cannot find ScriptAnalyzer rules in the
         # specified path", which fails the job through the catch below.
         $results += @(Invoke-ScriptAnalyzer -Path $fullPath -CustomRulePath $ruleModule)
+        # A file must not be able to hide its own findings with a suppression attribute.
+        foreach ($result in @(Invoke-ScriptAnalyzer -Path $fullPath -CustomRulePath $ruleModule -SuppressedOnly)) {
+            $results += [pscustomobject]@{
+                ScriptName = $result.ScriptName
+                Line       = $result.Line
+                RuleName   = $result.RuleName
+                Severity   = "$($result.Severity)"
+                Message    = "Suppressed in the file, still counted: $($result.Message)"
+            }
+        }
     }
 
     foreach ($result in $results) {

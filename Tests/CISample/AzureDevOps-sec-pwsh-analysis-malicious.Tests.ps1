@@ -131,6 +131,16 @@ Describe 'Azure DevOps CI sample script' -Tag Integration {
         $result.Log | Should -Match 'evil\.ps1 - Error : Ampersand calls'
     }
 
+    It 'still fails when the file suppresses its own Error finding' {
+        $repository = New-TestRepository -Name 'suppressed'
+        $commit = Add-TestCommit -Repository $repository -File @{ 'hidden.ps1' = "function F {`n [Diagnostics.CodeAnalysis.SuppressMessageAttribute('Ampersand calls', '')]`n param()`n & cmd.exe /c whoami`n}" }
+
+        $result = Invoke-TestJob -Repository $repository -Commit $commit
+
+        $result.ExitCode | Should -Be 1
+        $result.Log | Should -Match 'hidden\.ps1 - Error : Ampersand calls - Suppressed in the file'
+    }
+
     It 'never analyses its own tools folder' {
         $result = Invoke-TestJob -Repository $script:Repository -Commit $script:ToolCommit
 

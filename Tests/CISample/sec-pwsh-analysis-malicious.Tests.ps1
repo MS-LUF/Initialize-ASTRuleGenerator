@@ -138,6 +138,17 @@ Describe 'GitLab CI sample script' -Tag Integration -Skip:(-not $script:OnWindow
         $result.Log | Should -Match 'The job fails'
     }
 
+    It 'still fails when the file suppresses its own Error finding' {
+        $repository = New-TestRepository -Name 'suppressed'
+        $first = Invoke-TestGit -Repository $repository -Argument @('rev-parse', 'HEAD')
+        $commit = Add-TestCommit -Repository $repository -File @{ 'hidden.ps1' = "function F {`n [Diagnostics.CodeAnalysis.SuppressMessageAttribute('Ampersand calls', '')]`n param()`n & cmd.exe /c whoami`n}" }
+
+        $result = Invoke-TestJob -Repository $repository -Before $first -Commit $commit
+
+        $result.ExitCode | Should -Be 1
+        $result.Log | Should -Match 'hidden\.ps1 line 4 - Error : Ampersand calls - Suppressed in the file'
+    }
+
     It 'analyses every PowerShell file except its own tools when there is no previous commit' {
         $result = Invoke-TestJob -Repository $script:Repository -Before ('0' * 40) -Commit $script:ErrorCommit
 

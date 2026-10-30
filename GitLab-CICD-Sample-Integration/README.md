@@ -13,6 +13,7 @@ A simple integration sample of Initialize-ASTRuleGenerator as a dedicated job of
 - analyses every PowerShell file of the repository in a scheduled or manual pipeline, and when there is no previous commit to compare with.
 - runs PSScriptAnalyzer on each of them with the Initialize-ASTRuleGenerator rules. The `Security-PWSH-gitlab-ci` folder itself is never analysed.
 - fails (exit code 1) when a finding has the Error severity, and also when the analysis cannot run (rule module that does not load, git that cannot compare the commits...): a security check that cannot run does not pass.
+- counts findings a file suppresses for itself with a `SuppressMessageAttribute`: a scanned file cannot hide its own findings. They are logged as `Suppressed in the file, still counted`.
 - writes `pwsh-security-psanalyzer.log` on every run, kept as the job artifact.
 
 ## Notes

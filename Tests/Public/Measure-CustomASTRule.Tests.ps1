@@ -366,6 +366,76 @@ Describe 'Measure-CustomASTRule with ASTRULEGENERATOR_CONFIG through PSScriptAna
     }
 }
 
+Describe 'Measure-CustomASTRule reports each finding once' {
+    BeforeAll {
+        $script:OnceManifest = New-TestModuleCopy -Destination (Join-Path $TestDrive 'once-module')
+        $script:OnceRule = @{
+            Status = 'Enable'; Name = 'Once ampersand'; ASTType = 'CommandAst'; ASTProperty = 'InvocationOperator'
+            Operator = 'eq'; SearchStringPattern = @('Ampersand'); Message = 'Ampersand call'; Severity = 'error'
+        }
+        $script:OnceRulesPath = Join-Path $TestDrive 'once-rules.json'
+        Set-Content -Path $script:OnceRulesPath -Value (ConvertTo-Json -InputObject @{ rules = @($script:OnceRule) } -Depth 5)
+    }
+
+    AfterEach {
+        $env:ASTRULEGENERATOR_CONFIG = $null
+    }
+
+    It 'gives one finding through PSScriptAnalyzer when the code is <Name>' -Tag Integration -ForEach @(
+        @{ Name = 'at the top level'; Code = '& cmd.exe' }
+        @{ Name = 'in a function'; Code = "function F {`n & cmd.exe`n}" }
+        @{ Name = 'in a nested function'; Code = "function F {`n function G {`n & cmd.exe`n }`n}" }
+        @{ Name = 'in a function and a script block'; Code = "function F {`n . {`n & cmd.exe`n }`n}" }
+    ) {
+        $env:ASTRULEGENERATOR_CONFIG = $script:OnceRulesPath
+        $path = Join-Path $TestDrive 'once-sample.ps1'
+        Set-Content -Path $path -Value $Code
+
+        $result = @(Invoke-ScriptAnalyzer -Path $path -CustomRulePath $script:OnceManifest | Where-Object { $_.RuleName -eq 'Once ampersand' })
+
+        $result.Count | Should -Be 1
+    }
+
+    It 'gives one allow-list finding through PSScriptAnalyzer for a file with nested script blocks' -Tag Integration {
+        $rulesPath = Join-Path $TestDrive 'once-allowlist-rules.json'
+        Set-Content -Path $rulesPath -Value (ConvertTo-Json -InputObject @{ rules = @($script:OnceRule); allowlist = @{ FileNamePattern = @('once-listed*.ps1') } } -Depth 5)
+        $env:ASTRULEGENERATOR_CONFIG = $rulesPath
+        $path = Join-Path $TestDrive 'once-listed.ps1'
+        Set-Content -Path $path -Value "function F {`n . { 1 }`n}"
+
+        $result = @(Invoke-ScriptAnalyzer -Path $path -CustomRulePath $script:OnceManifest | Where-Object { $_.RuleName -eq 'Allow-list' })
+
+        $result.Count | Should -Be 1
+    }
+
+    It 'returns nothing for a nested script block given directly, since the outermost one covers it' -Tag Unit {
+        $env:ASTRULEGENERATOR_CONFIG = $script:OnceRulesPath
+        Import-Module $script:OnceManifest -Force
+        $tokens = $null
+        $errors = $null
+        $ast = [System.Management.Automation.Language.Parser]::ParseInput("function F {`n & cmd.exe`n}", [ref]$tokens, [ref]$errors)
+        $nested = $ast.Find({ param($node) $node -is [System.Management.Automation.Language.ScriptBlockAst] -and $null -ne $node.Parent }, $true)
+
+        @(Measure-CustomASTRule -ScriptBlockAst $ast).Count | Should -Be 1
+        @(Measure-CustomASTRule -ScriptBlockAst $nested).Count | Should -Be 0
+        Remove-Module Initialize-ASTRuleGenerator -Force
+    }
+
+    It 'keeps a finding suppressed in the analysed file available through -SuppressedOnly' -Tag Integration {
+        # The CI samples rely on this: a scanned file must not be able to hide its own findings.
+        $env:ASTRULEGENERATOR_CONFIG = $script:OnceRulesPath
+        $path = Join-Path $TestDrive 'once-suppressed.ps1'
+        Set-Content -Path $path -Value "function F {`n [Diagnostics.CodeAnalysis.SuppressMessageAttribute('Once ampersand', '')]`n param()`n & cmd.exe`n}"
+
+        $visible = @(Invoke-ScriptAnalyzer -Path $path -CustomRulePath $script:OnceManifest | Where-Object { $_.RuleName -eq 'Once ampersand' })
+        $suppressed = @(Invoke-ScriptAnalyzer -Path $path -CustomRulePath $script:OnceManifest -SuppressedOnly | Where-Object { $_.RuleName -eq 'Once ampersand' })
+
+        $visible.Count | Should -Be 0
+        $suppressed.Count | Should -Be 1
+        "$($suppressed[0].Severity)" | Should -Be 'Error'
+    }
+}
+
 Describe 'Measure-CustomASTRule with MinimumCount' -Tag Unit {
     BeforeAll {
         # Three matches in all, from two patterns of the same rule.

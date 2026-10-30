@@ -1,6 +1,6 @@
 @{
     RootModule        = 'Initialize-ASTRuleGenerator.psm1'
-    ModuleVersion     = '1.1.0'
+    ModuleVersion     = '1.1.1'
     GUID              = '1b00b851-b466-4a87-a99f-071d0c00f84a'
     Author            = 'MS-LUF'
     CompanyName       = 'lucas-cueff.com'
@@ -39,7 +39,7 @@
             LicenseUri   = 'https://opensource.org/licenses/artistic-license-2.0'
             ProjectUri   = 'https://github.com/MS-LUF/Initialize-ASTRuleGenerator'
             IconUri      = 'http://www.lucas-cueff.com/files/gallery.png'
-            ReleaseNotes = 'v1.1.0 - First stable release, no longer a beta; same behaviour as 0.12.0. See the change log in README.md.'
+            ReleaseNotes = 'v1.1.1 - Each finding is reported once for code in functions and script blocks. See the change log in README.md.'
         }
     }
 }

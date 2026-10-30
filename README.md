@@ -39,8 +39,10 @@ The rules file and the script of this example, the rule properties and the error
 - `Get-Help Measure-CustomASTRule` needs PSScriptAnalyzer to be loaded first.
 - A [GitLab CI-CD sample](GitLab-CICD-Sample-Integration/README.md) checks the PowerShell files of every commit.
 - An [Azure DevOps CI-CD sample](AzureDevOPS-CICD-Sample-Integration/README.md) checks the PowerShell files changed on every branch.
+- A scanned file can hide its own findings with a `SuppressMessageAttribute`. Both CI samples count them anyway; on your own, add a run with `-SuppressedOnly`. See [HowTo.md](HowTo.md).
 
 ## Change log
+- **1.1.1** - a finding in a function or script block was reported once per level of nesting, and so were the allow-list and encoding findings: each is now reported once. The CI samples also count findings a file suppresses for itself.
 - **1.1.0** - first stable release, no longer a beta; the version follows the release tags. Same behaviour as 0.12.0.
 - **0.12.0** - new Error finding, `Ambiguous file encoding`, for a file without a byte order mark that Windows PowerShell 5.1 and PowerShell 7 read as different code, which can hide code from a scan; turn it off with `"encodingcheck": "Disable"` in the rules file.
 - **0.11.0** - 9 new shipped rules: reflective assembly load, execution policy weakened, PowerShell 2 downgrade (Error), logging policy values, paste-host, GitHub raw and bare-IP URLs, hex decoding, hidden `Start-Process`; "Hidden or policy-bypassing PowerShell" also catches `-ep bypass`. Results change for anyone using the shipped file.

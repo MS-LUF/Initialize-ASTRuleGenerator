@@ -141,7 +141,7 @@ try {
         $diffArguments = @('diff-tree', '--root', '--no-commit-id', '-r', '--name-only', '-z', '--diff-filter=ACMRT', $commit, '--')
     }
     $outputgitdiff = ((Invoke-RepositoryGit -Arguments $diffArguments) -join "`n") -split "`0"
-    # The CI tooling folder is never analyzed. 
+    # The CI tooling folder is never analyzed.
     $scriptFiles = @($outputgitdiff | Where-Object { $_ -match '\.(ps1|psm1|psd1)$' -and -not $_.StartsWith('Security-PWSH-ADO-ci/') })
     $results = New-Object 'System.Collections.Generic.List[object]'
 
@@ -177,6 +177,16 @@ try {
             Write-SecurityJobLog -info info -message "Analyzing $changedFilePath" -Verbose
             foreach ($result in (Invoke-ScriptAnalyzer -Path $changedFilePath -CustomRulePath $custommodule -ErrorAction Stop)) {
                 $results.Add($result)
+            }
+            # A file must not be able to hide its own findings with a suppression attribute.
+            foreach ($result in (Invoke-ScriptAnalyzer -Path $changedFilePath -CustomRulePath $custommodule -SuppressedOnly -ErrorAction Stop)) {
+                $results.Add([pscustomobject]@{
+                        ScriptName = $result.ScriptName
+                        Line       = $result.Line
+                        RuleName   = $result.RuleName
+                        Severity   = "$($result.Severity)"
+                        Message    = "Suppressed in the file, still counted: $($result.Message)"
+                    })
             }
         }
     } else {
