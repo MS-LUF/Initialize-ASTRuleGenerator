@@ -3,11 +3,18 @@ stages:
 
 repository_based_script_on_windows:
   stage: detect_pwsh_psscriptanalyzer
-  tags:  
+  tags:
     - TagsToBeDefinedHere
 
   variables:
     SCENARIO: "*** SCENARIO: Detect potential PWSH malicious code in commit"
+    # Optional: absolute path of a rules file to use instead of the one in the module folder,
+    # for example one kept in this repository.
+    # ASTRULEGENERATOR_CONFIG: "$CI_PROJECT_DIR\\security-rules.json"
+    # On a branch other than the default branch, the job compares the commit with its merge-base
+    # with the default branch. When the clone is shallow or lacks the default branch, the job
+    # fetches them from origin itself; a full clone saves that fetch.
+    # GIT_DEPTH: "0"
 
   script: ./sec-pwsh-analysis-malicious.ps1
   allow_failure: false

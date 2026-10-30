@@ -5,3 +5,14 @@ Folder Files list :
 \Initialize-ASTRuleGenerator.json
 \Initialize-ASTRuleGenerator.psd1
 \Initialize-ASTRuleGenerator.psm1
+\Public\Measure-CustomASTRule.ps1
+\Private\Rule\ConvertTo-ASTRuleGeneratorRule.ps1
+\Private\Rule\Get-ASTRuleGeneratorPropertyValue.ps1
+\Private\Rule\Test-ASTRuleGeneratorCondition.ps1
+\Private\Rule\Write-ASTRuleGeneratorEvaluationError.ps1
+\Private\Config\Get-ASTRuleGeneratorConfigPath.ps1
+\Private\Config\Read-ASTRuleGeneratorConfig.ps1
+\en-US\Initialize-ASTRuleGenerator-help.xml
+\Private\AllowList\ConvertTo-ASTRuleGeneratorAllowList.ps1
+\Private\AllowList\Get-ASTRuleGeneratorFileHash.ps1
+\Private\AllowList\Test-ASTRuleGeneratorAllowList.ps1

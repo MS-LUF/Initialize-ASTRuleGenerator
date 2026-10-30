@@ -1,0 +1,45 @@
+# Initialize-ASTRuleGenerator - Azure DevOps sample integration
+# Runs the Initialize-ASTRuleGenerator rules on the PowerShell files changed on a branch, and fails
+# on an Error finding. See README.md for the installation.
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - '*'
+
+pool:
+  vmImage: ubuntu-latest # its PowerShell 7 and git run the job
+
+# Optional: absolute path of a rules file to use instead of the one in the module folder, for
+# example one kept in this repository.
+# variables:
+#   ASTRULEGENERATOR_CONFIG: '$(Build.SourcesDirectory)/security-rules.json'
+
+stages:
+- stage: PowerShellSecurity
+  # Every commit since the branch left main is analysed, so main itself is not.
+  condition: ne(variables['Build.SourceBranch'], 'refs/heads/main')
+  displayName: "PowerShell security analysis"
+  jobs:
+  - job: SecurityTest
+    displayName: "Detect potential malicious PowerShell code"
+    steps:
+      - checkout: self
+        fetchDepth: 0 # full history: the job compares the branch with origin/main
+      - task: PowerShell@2
+        inputs:
+          targetType: 'filePath'
+          filePath: 'sec-pwsh-analysis-malicious.ps1'
+          arguments: '-BaseBranch main'
+      - task: CopyFiles@2
+        condition: Failed()
+        inputs:
+          sourceFolder: '$(Build.SourcesDirectory)'
+          contents: 'Logs/*.log'
+          targetFolder: '$(Build.ArtifactStagingDirectory)'
+      - task: PublishBuildArtifacts@1
+        condition: Failed()
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'sec-pwsh-analysis-failure-log'

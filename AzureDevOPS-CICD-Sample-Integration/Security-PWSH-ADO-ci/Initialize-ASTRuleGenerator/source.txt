@@ -1,0 +1,23 @@
+Download instruction :
+Put the Initialize-ASTRuleGenerator module here: the files below, from the module repository,
+with the rules file (Initialize-ASTRuleGenerator.json) you want the job to use.
+
+Folder Files list :
+/Initialize-ASTRuleGenerator.psd1
+/Initialize-ASTRuleGenerator.psm1
+/Initialize-ASTRuleGenerator.json
+/Private/AllowList/ConvertTo-ASTRuleGeneratorAllowList.ps1
+/Private/AllowList/Get-ASTRuleGeneratorFileHash.ps1
+/Private/AllowList/Test-ASTRuleGeneratorAllowList.ps1
+/Private/Config/Get-ASTRuleGeneratorConfigPath.ps1
+/Private/Config/Read-ASTRuleGeneratorConfig.ps1
+/Private/Encoding/ConvertTo-ASTRuleGeneratorEncodingCheck.ps1
+/Private/Encoding/Get-ASTRuleGeneratorAnsiEncoding.ps1
+/Private/Encoding/Get-ASTRuleGeneratorFileByte.ps1
+/Private/Encoding/Test-ASTRuleGeneratorEncoding.ps1
+/Private/Rule/ConvertTo-ASTRuleGeneratorRule.ps1
+/Private/Rule/Get-ASTRuleGeneratorPropertyValue.ps1
+/Private/Rule/Test-ASTRuleGeneratorCondition.ps1
+/Private/Rule/Write-ASTRuleGeneratorEvaluationError.ps1
+/Public/Measure-CustomASTRule.ps1
+/en-US/Initialize-ASTRuleGenerator-help.xml
